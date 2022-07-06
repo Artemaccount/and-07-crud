@@ -20,21 +20,57 @@ class PostRepositoryImpl : PostRepository {
             }
 
             override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                TODO("Not yet implemented")
+                callback.onError(RuntimeException(t.message))
             }
         })
     }
 
     override fun save(post: Post, callback: PostRepository.Callback<Post>) {
-        // TODO("Not yet implemented")
+        PostsApi.retrofitService.save(post).enqueue(object : Callback<Post> {
+            override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                if (!response.isSuccessful) {
+                    callback.onError(RuntimeException(response.message()))
+                    return
+                }
+                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+            }
+
+            override fun onFailure(call: Call<Post>, t: Throwable) {
+                callback.onError(RuntimeException(t.message))
+            }
+        })
     }
 
     override fun removeById(id: Long, callback: PostRepository.Callback<Unit>) {
-        // TODO("Not yet implemented")
+        PostsApi.retrofitService.removeById(id).enqueue(object : Callback<Unit> {
+            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                if (!response.isSuccessful) {
+                    callback.onError(RuntimeException(response.message()))
+                    return
+                }
+                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+            }
+
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
+                callback.onError(RuntimeException(t.message))
+            }
+        })
     }
 
-    override fun likeById(id: Long, callback: PostRepository.Callback<Post>) {
-        // TODO("Not yet implemented")
+    override fun likeById(post: Post, callback: PostRepository.Callback<Post>) {
+        PostsApi.retrofitService.likeById(post.id).enqueue(object : Callback<Post> {
+            override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                if (!response.isSuccessful) {
+                    callback.onError(RuntimeException(response.message()))
+                    return
+                }
+                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+            }
+
+            override fun onFailure(call: Call<Post>, t: Throwable) {
+                callback.onError(RuntimeException(t.message))
+            }
+        })
     }
 
 }
